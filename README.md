@@ -1,7 +1,8 @@
 3D Software Renderer
 ==
 
-thebennybox 3D Software Renderer
+thebennybox 3D Software Renderer 
+Tutorial found here: https://www.youtube.com/playlist?list=PLEETnX-uPtBUbVOok816vTl1K9vV1GgH5
 
 ##Build Dependencies##
 - [JAVA](https://www.java.com/en/download/)
@@ -11,6 +12,7 @@ thebennybox 3D Software Renderer
 	- [IntelliJ IDEA](http://www.jetbrains.com/idea/)
 
 ##Simple Build Instructions##
+###Using IDE###
 - Open your preferred Java IDE, and create a new project.
 - Import everything under the src folder as source files.
 - Copy the res folder into your Java IDE's folder for your project.
