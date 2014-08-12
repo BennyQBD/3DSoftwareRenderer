@@ -28,7 +28,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 import java.awt.Canvas;
+import java.awt.Graphics;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferStrategy;
+import java.awt.image.DataBufferByte;
 import javax.swing.JFrame;
 
 /**
@@ -37,7 +41,17 @@ import javax.swing.JFrame;
 public class Display extends Canvas
 {
 	/** The window being used for display */
-	private final JFrame m_frame;
+	private final JFrame         m_frame;
+	/** The bitmap representing the final image to display */
+	private final Bitmap         m_frameBuffer;
+	/** Used to display the framebuffer in the window */
+	private final BufferedImage  m_displayImage;
+	/** The pixels of the display image, as an array of byte components */
+	private final byte[]         m_displayComponents;
+	/** The buffers in the Canvas */
+	private final BufferStrategy m_bufferStrategy;
+	/** A graphics object that can draw into the Canvas's buffers */
+	private final Graphics       m_graphics;
 
 	/**
 	 * Creates and initializes a new display.
@@ -55,6 +69,15 @@ public class Display extends Canvas
 		setMinimumSize(size);
 		setMaximumSize(size);
 
+		//Creates images used for display.
+		m_frameBuffer = new Bitmap(width, height);
+		m_displayImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		m_displayComponents = 
+			((DataBufferByte)m_displayImage.getRaster().getDataBuffer()).getData();
+
+		m_frameBuffer.Clear((byte)0x80);
+		m_frameBuffer.DrawPixel(100, 100, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xFF);
+
 		//Create a JFrame designed specifically to show this Display.
 		m_frame = new JFrame();
 		m_frame.add(this);
@@ -64,5 +87,25 @@ public class Display extends Canvas
 		m_frame.setLocationRelativeTo(null);
 		m_frame.setTitle(title);
 		m_frame.setVisible(true);
+
+		//Allocates 1 display buffer, and gets access to it via the buffer
+		//strategy and a graphics object for drawing into it.
+		createBufferStrategy(1);
+		m_bufferStrategy = getBufferStrategy();
+		m_graphics = m_bufferStrategy.getDrawGraphics();
+	}
+
+	/**
+	 * Displays in the window.
+	 */
+	public void SwapBuffers()
+	{
+		//Display components should be the byte array used for displayImage's pixels.
+		//Therefore, this call should effectively copy the frameBuffer into the
+		//displayImage.
+		m_frameBuffer.CopyToByteArray(m_displayComponents);
+		m_graphics.drawImage(m_displayImage, 0, 0, 
+			m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight(), null);
+		m_bufferStrategy.show();
 	}
 }

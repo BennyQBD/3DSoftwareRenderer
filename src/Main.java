@@ -38,5 +38,10 @@ public class Main
 	{
 		Display display = new Display(800, 600, "Software Rendering");
 		//System.out.println("Hello everyone! It's Benny!");
+
+		while(true)
+		{
+			display.SwapBuffers();
+		}
 	}
 }
