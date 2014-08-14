@@ -53,6 +53,8 @@ public class Display extends Canvas
 	/** A graphics object that can draw into the Canvas's buffers */
 	private final Graphics       m_graphics;
 
+	public Bitmap GetFrameBuffer() { return m_frameBuffer; }
+
 	/**
 	 * Creates and initializes a new display.
 	 *
@@ -86,6 +88,7 @@ public class Display extends Canvas
 		m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		m_frame.setLocationRelativeTo(null);
 		m_frame.setTitle(title);
+		//m_frame.setSize(width, height);
 		m_frame.setVisible(true);
 
 		//Allocates 1 display buffer, and gets access to it via the buffer
