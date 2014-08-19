@@ -91,6 +91,7 @@ public class Stars3D
 	 */
 	public void UpdateAndRender(Bitmap target, float delta)
 	{
+		final float tanHalfFOV = (float)Math.tan(Math.toRadians(90.0/2.0));
 		//Stars are drawn on a black background
 		target.Clear((byte)0x00);
 
@@ -114,8 +115,14 @@ public class Stars3D
 
 			//Multiplying the position by (size/2) and then adding (size/2)
 			//remaps the positions from range (-1, 1) to (0, size)
-			int x = (int)((m_starX[i]/m_starZ[i]) * halfWidth + halfWidth);
-			int y = (int)((m_starY[i]/m_starZ[i]) * halfHeight + halfHeight);
+
+			//Division by z*tanHalfFOV moves things in to create a perspective effect.
+			int x = (int)((m_starX[i]/(m_starZ[i] * tanHalfFOV)) * halfWidth + halfWidth);
+			int y = (int)((m_starY[i]/(m_starZ[i] * tanHalfFOV)) * halfHeight + halfHeight);
+//
+//			int x = (int)((m_starX[i]) * halfWidth + halfWidth);
+//			int y = (int)((m_starY[i]) * halfHeight + halfHeight);
+
 
 			//If the star is not within range of the screen, then generate a
 			//new position for it.
