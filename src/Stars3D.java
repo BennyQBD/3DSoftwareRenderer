@@ -89,7 +89,7 @@ public class Stars3D
 	 * @param target The bitmap to render to.
 	 * @param delta  How much time has passed since the last update.
 	 */
-	public void UpdateAndRender(Bitmap target, float delta)
+	public void UpdateAndRender(RenderContext target, float delta)
 	{
 		final float tanHalfFOV = (float)Math.tan(Math.toRadians(90.0/2.0));
 		//Stars are drawn on a black background
