@@ -40,6 +40,10 @@ public class Main
 		RenderContext target = display.GetFrameBuffer();
 		Stars3D stars = new Stars3D(4096, 64.0f, 4.0f);
 
+		Vertex minYVert = new Vertex(100, 100);
+		Vertex midYVert = new Vertex(150, 200);
+		Vertex maxYVert = new Vertex(80, 300);
+
 		long previousTime = System.nanoTime();
 		while(true)
 		{
@@ -50,12 +54,12 @@ public class Main
 			//stars.UpdateAndRender(target, delta);
 			target.Clear((byte)0x00);
 			
-			for(int j = 100; j < 200; j++)
-			{
-				target.DrawScanBuffer(j, 300 - j, 300 + j); 
-			}
-
-			target.FillShape(100, 200);
+//			for(int j = 100; j < 200; j++)
+//			{
+//				target.DrawScanBuffer(j, 300 - j, 300 + j); 
+//			}
+			target.ScanConvertTriangle(minYVert, midYVert, maxYVert, 0);
+			target.FillShape(100, 300);
 
 			display.SwapBuffers();
 		}
