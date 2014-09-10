@@ -97,6 +97,12 @@ public class Stars3D
 
 		float halfWidth  = target.GetWidth()/2.0f;
 		float halfHeight = target.GetHeight()/2.0f;
+		int triangleBuilderCounter = 0;
+
+		int x1 = 0;
+		int y1 = 0;
+		int x2 = 0;
+		int y2 = 0;
 		for(int i = 0; i < m_starX.length; i++)
 		{
 			//Update the Star.
@@ -130,11 +136,32 @@ public class Stars3D
 				(y < 0 || y >= target.GetHeight()))
 			{
 				InitStar(i);
+				continue;
 			}
-			else
+//			else
+//			{
+//				//Otherwise, it is safe to draw this star to the screen.
+//				target.DrawPixel(x, y, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF);
+//			}
+			triangleBuilderCounter++;
+			if(triangleBuilderCounter == 1)
 			{
-				//Otherwise, it is safe to draw this star to the screen.
-				target.DrawPixel(x, y, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF);
+				x1 = x;
+				y1 = y;
+			}
+			else if(triangleBuilderCounter == 2)
+			{
+				x2 = x;
+				y2 = y;
+			}
+			else if(triangleBuilderCounter == 3)
+			{
+				triangleBuilderCounter = 0;
+				Vertex v1 = new Vertex(x1, y1);
+				Vertex v2 = new Vertex(x2, y2);
+				Vertex v3 = new Vertex(x, y);
+
+				target.FillTriangle(v1, v2, v3);
 			}
 		}
 	}

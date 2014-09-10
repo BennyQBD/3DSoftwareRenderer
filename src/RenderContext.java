@@ -28,6 +28,40 @@ public class RenderContext extends Bitmap
 		}
 	}
 
+	public void FillTriangle(Vertex v1, Vertex v2, Vertex v3)
+	{
+		Vertex minYVert = v1;
+		Vertex midYVert = v2;
+		Vertex maxYVert = v3;
+
+		if(maxYVert.GetY() < midYVert.GetY())
+		{
+			Vertex temp = maxYVert;
+			maxYVert = midYVert;
+			midYVert = temp;
+		}
+
+		if(midYVert.GetY() < minYVert.GetY())
+		{
+			Vertex temp = midYVert;
+			midYVert = minYVert;
+			minYVert = temp;
+		}
+
+		if(maxYVert.GetY() < midYVert.GetY())
+		{
+			Vertex temp = maxYVert;
+			maxYVert = midYVert;
+			midYVert = temp;
+		}
+
+		float area = minYVert.TriangleArea(maxYVert, midYVert);
+		int handedness = area >= 0 ? 1 : 0;
+
+		ScanConvertTriangle(minYVert, midYVert, maxYVert, handedness);
+		FillShape((int)minYVert.GetY(), (int)maxYVert.GetY());
+	}
+
 	public void ScanConvertTriangle(Vertex minYVert, Vertex midYVert, 
 			Vertex maxYVert, int handedness)
 	{

@@ -81,6 +81,8 @@ public class Bitmap
 
 	/**
 	 * Sets every pixel in the bitmap to a specific shade of grey.
+	 *
+	 * @param shade The shade of grey to use. 0 is black, 255 is white.
 	 */
 	public void Clear(byte shade)
 	{
@@ -89,6 +91,13 @@ public class Bitmap
 
 	/**
 	 * Sets the pixel at (x, y) to the color specified by (a,b,g,r).
+	 *
+	 * @param x Pixel location in X
+	 * @param y Pixel location in Y
+	 * @param a Alpha component
+	 * @param b Blue component
+	 * @param g Green component
+	 * @param r Red component
 	 */
 	public void DrawPixel(int x, int y, byte a, byte b, byte g, byte r)
 	{
@@ -101,6 +110,8 @@ public class Bitmap
 
 	/**
 	 * Copies the Bitmap into a BGR byte array.
+	 *
+	 * @param dest The byte array to copy into.
 	 */
 	public void CopyToByteArray(byte[] dest)
 	{
