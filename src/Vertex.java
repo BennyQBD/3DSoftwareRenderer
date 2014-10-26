@@ -28,20 +28,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 public class Vertex
 {
-	/** Location in X */
-	private float m_x;
-	/** Location in Y */
-	private float m_y;
-
+	private Vector4f m_pos;
+	
 	/** Basic Getter */
-	public float GetX() { return m_x; }
+	public float GetX() { return m_pos.GetX(); }
 	/** Basic Getter */
-	public float GetY() { return m_y; }
-
-	/** Basic Setter */
-	public void SetX(float x) { m_x = x; }
-	/** Basic Setter */
-	public void SetY(float y) { m_y = y; }
+	public float GetY() { return m_pos.GetY(); }
 
 	/**
 	 * Creates a new Vertex in a usable state.
@@ -49,19 +41,34 @@ public class Vertex
 	 * @param x Location on X
 	 * @param y Location on Y
 	 */
-	public Vertex(float x, float y)
+	public Vertex(float x, float y, float z)
 	{
-		m_x = x;
-		m_y = y;
+		m_pos = new Vector4f(x, y, z, 1);
 	}
 
-	public float TriangleArea(Vertex b, Vertex c)
+	public Vertex(Vector4f pos)
 	{
-		float x1 = b.GetX() - m_x;
-		float y1 = b.GetY() - m_y;
+		m_pos = pos;
+	}
 
-		float x2 = c.GetX() - m_x;
-		float y2 = c.GetY() - m_y;
+	public Vertex Transform(Matrix4f transform)
+	{
+		return new Vertex(transform.Transform(m_pos));
+	}
+
+	public Vertex PerspectiveDivide()
+	{
+		return new Vertex(new Vector4f(m_pos.GetX()/m_pos.GetW(), m_pos.GetY()/m_pos.GetW(), 
+						m_pos.GetZ()/m_pos.GetW(), m_pos.GetW()));
+	}
+
+	public float TriangleAreaTimesTwo(Vertex b, Vertex c)
+	{
+		float x1 = b.GetX() - m_pos.GetX();
+		float y1 = b.GetY() - m_pos.GetY();
+
+		float x2 = c.GetX() - m_pos.GetX();
+		float y2 = c.GetY() - m_pos.GetY();
 
 		return (x1 * y2 - x2 * y1);
 	}
