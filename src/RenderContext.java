@@ -61,7 +61,7 @@ public class RenderContext extends Bitmap
 		int handedness = area >= 0 ? 1 : 0;
 
 		ScanConvertTriangle(minYVert, midYVert, maxYVert, handedness);
-		FillShape((int)minYVert.GetY(), (int)maxYVert.GetY());
+		FillShape((int)Math.ceil(minYVert.GetY()), (int)Math.ceil(maxYVert.GetY()));
 	}
 
 	public void ScanConvertTriangle(Vertex minYVert, Vertex midYVert, 
@@ -74,13 +74,13 @@ public class RenderContext extends Bitmap
 
 	private void ScanConvertLine(Vertex minYVert, Vertex maxYVert, int whichSide)
 	{
-		int yStart = (int)minYVert.GetY();
-		int yEnd   = (int)maxYVert.GetY();
-		int xStart = (int)minYVert.GetX();
-		int xEnd   = (int)maxYVert.GetX();
+		int yStart = (int)Math.ceil(minYVert.GetY());
+		int yEnd   = (int)Math.ceil(maxYVert.GetY());
+		int xStart = (int)Math.ceil(minYVert.GetX());
+		int xEnd   = (int)Math.ceil(maxYVert.GetX());
 
-		int yDist = yEnd - yStart;
-		int xDist = xEnd - xStart;
+		float yDist = maxYVert.GetY() - minYVert.GetY();
+		float xDist = maxYVert.GetX() - minYVert.GetX();
 
 		if(yDist <= 0)
 		{
@@ -88,12 +88,13 @@ public class RenderContext extends Bitmap
 		}
 
 		float xStep = (float)xDist/(float)yDist;
-		float curX = (float)xStart;
+		float yPrestep = yStart - minYVert.GetY();
+		float curX = minYVert.GetX() + yPrestep * xStep;
 
 		for(int j = yStart; j < yEnd; j++)
 		{
-			m_scanBuffer[j * 2 + whichSide] = (int)curX;
+			m_scanBuffer[j * 2 + whichSide] = (int)Math.ceil(curX);
 			curX += xStep;
-		}
+		}	
 	}
 }
