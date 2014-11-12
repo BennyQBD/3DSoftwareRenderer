@@ -47,11 +47,11 @@ public class RenderContext extends Bitmap
 		Edge topToMiddle    = new Edge(gradients, minYVert, midYVert, 0);
 		Edge middleToBottom = new Edge(gradients, midYVert, maxYVert, 1);
 
-		ScanEdges(gradients, topToBottom, topToMiddle, handedness, texture);
-		ScanEdges(gradients, topToBottom, middleToBottom, handedness, texture);
+		ScanEdges(topToBottom, topToMiddle, handedness, texture);
+		ScanEdges(topToBottom, middleToBottom, handedness, texture);
 	}
 
-	private void ScanEdges(Gradients gradients, Edge a, Edge b, boolean handedness, Bitmap texture)
+	private void ScanEdges(Edge a, Edge b, boolean handedness, Bitmap texture)
 	{
 		Edge left = a;
 		Edge right = b;
@@ -66,31 +66,37 @@ public class RenderContext extends Bitmap
 		int yEnd   = b.GetYEnd();
 		for(int j = yStart; j < yEnd; j++)
 		{
-			DrawScanLine(gradients, left, right, j, texture);
+			DrawScanLine(left, right, j, texture);
 			left.Step();
 			right.Step();
 		}
 	}
 
-	private void DrawScanLine(Gradients gradients, Edge left, Edge right, int j, Bitmap texture)
+	private void DrawScanLine(Edge left, Edge right, int j, Bitmap texture)
 	{
 		int xMin = (int)Math.ceil(left.GetX());
 		int xMax = (int)Math.ceil(right.GetX());
 		float xPrestep = xMin - left.GetX();
 
-		float texCoordX = left.GetTexCoordX() + gradients.GetTexCoordXXStep() * xPrestep;
-		float texCoordY = left.GetTexCoordY() + gradients.GetTexCoordYXStep() * xPrestep;
+		float xDist = right.GetX() - left.GetX();
+		float texCoordXXStep = (right.GetTexCoordX() - left.GetTexCoordX())/xDist;
+		float texCoordYXStep = (right.GetTexCoordY() - left.GetTexCoordY())/xDist;
+		float oneOverZXStep = (right.GetOneOverZ() - left.GetOneOverZ())/xDist;
+
+		float texCoordX = left.GetTexCoordX() + texCoordXXStep * xPrestep;
+		float texCoordY = left.GetTexCoordY() + texCoordYXStep * xPrestep;
+		float oneOverZ = left.GetOneOverZ() + oneOverZXStep * xPrestep;
 
 		for(int i = xMin; i < xMax; i++)
 		{
-			int srcX = (int)(texCoordX * (texture.GetWidth() - 1) + 0.5f);
-
-			//Point out that this was changed to get height in video 16
-			int srcY = (int)(texCoordY * (texture.GetHeight() - 1) + 0.5f);
+			float z = 1.0f/oneOverZ;
+			int srcX = (int)((texCoordX * z) * (float)(texture.GetWidth() - 1) + 0.5f);
+			int srcY = (int)((texCoordY * z) * (float)(texture.GetHeight() - 1) + 0.5f);
 
 			CopyPixel(i, j, srcX, srcY, texture);
-			texCoordX += gradients.GetTexCoordXXStep();
-			texCoordY += gradients.GetTexCoordYXStep();
+			oneOverZ += oneOverZXStep;
+			texCoordX += texCoordXXStep;
+			texCoordY += texCoordYXStep;
 		}
 	}
 }

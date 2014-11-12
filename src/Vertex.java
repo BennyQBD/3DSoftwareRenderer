@@ -36,6 +36,7 @@ public class Vertex
 	/** Basic Getter */
 	public float GetY() { return m_pos.GetY(); }
 
+	public Vector4f GetPosition() { return m_pos; }
 	public Vector4f GetTexCoords() { return m_texCoords; }
 
 	/**
