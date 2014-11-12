@@ -44,7 +44,8 @@ public class Main
 		RenderContext target = display.GetFrameBuffer();
 		Stars3D stars = new Stars3D(3, 64.0f, 4.0f);
 
-		Bitmap texture = new Bitmap("./res/simpbricks.png");
+		Bitmap texture = new Bitmap("./res/bricks.jpg");
+		Mesh mesh = new Mesh("./res/icosphere.obj");
 
 		Vertex minYVert = new Vertex(new Vector4f(-1, -1, 0, 1), 
 		                             new Vector4f(0.0f, 0.0f, 0.0f, 0.0f));
@@ -73,9 +74,10 @@ public class Main
 			Matrix4f transform = projection.Mul(translation.Mul(rotation));//translation.Mul(rotation));
 
 			target.Clear((byte)0x00);
-			target.FillTriangle(maxYVert.Transform(transform), 
-							midYVert.Transform(transform), minYVert.Transform(transform),
-							texture);
+			target.DrawMesh(mesh, transform, texture);
+//			target.FillTriangle(maxYVert.Transform(transform), 
+//							midYVert.Transform(transform), minYVert.Transform(transform),
+//							texture);
 
 			display.SwapBuffers();
 		}
