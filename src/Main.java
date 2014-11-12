@@ -27,6 +27,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.io.IOException;
+
 /**
  * The sole purpose of this class is to hold the main method.
  *
@@ -34,24 +36,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  */
 public class Main
 {
-	public static void main(String[] args)
+	// Lazy exception handling here. You can do something more interesting 
+	// depending on what you're doing
+	public static void main(String[] args) throws IOException
 	{
 		Display display = new Display(800, 600, "Software Rendering");
 		RenderContext target = display.GetFrameBuffer();
 		Stars3D stars = new Stars3D(3, 64.0f, 4.0f);
 
-		Bitmap texture = new Bitmap(32, 32);
-		for(int j = 0; j < texture.GetHeight(); j++)
-		{
-			for(int i = 0; i < texture.GetWidth(); i++)
-			{
-				texture.DrawPixel(i, j,
-					(byte)(Math.random() * 255.0 + 0.5),
-					(byte)(Math.random() * 255.0 + 0.5),
-					(byte)(Math.random() * 255.0 + 0.5),
-					(byte)(Math.random() * 255.0 + 0.5));
-			}
-		}
+		Bitmap texture = new Bitmap("./res/simpbricks.png");
 
 		Vertex minYVert = new Vertex(new Vector4f(-1, -1, 0, 1), 
 		                             new Vector4f(0.0f, 0.0f, 0.0f, 0.0f));
@@ -75,8 +68,9 @@ public class Main
 
 			rotCounter += delta;
 			Matrix4f translation = new Matrix4f().InitTranslation(0.0f, 0.0f, 3.0f);
-			Matrix4f rotation = new Matrix4f().InitRotation(rotCounter, rotCounter, rotCounter);
-			Matrix4f transform = projection.Mul(translation.Mul(rotation));
+			Matrix4f rotation = new Matrix4f().InitRotation(rotCounter, 0.0f, rotCounter);
+			Matrix4f scale = new Matrix4f().InitScale(0.001f, 0.001f, 0.001f);
+			Matrix4f transform = projection.Mul(translation.Mul(rotation));//translation.Mul(rotation));
 
 			target.Clear((byte)0x00);
 			target.FillTriangle(maxYVert.Transform(transform), 

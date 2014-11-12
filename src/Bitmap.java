@@ -28,6 +28,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 import java.util.Arrays;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 
 /**
  * Stores a set of pixels in a component-based format.
@@ -79,6 +84,36 @@ public class Bitmap
 		m_width      = width;
 		m_height     = height;
 		m_components = new byte[m_width * m_height * 4];
+	}
+
+	public Bitmap(String fileName) throws IOException
+	{
+		int width = 0;
+		int height = 0;
+		byte[] components = null;
+
+		BufferedImage image = ImageIO.read(new File(fileName));
+
+		width = image.getWidth();
+		height = image.getHeight();
+
+		int imgPixels[] = new int[width * height];
+		image.getRGB(0, 0, width, height, imgPixels, 0, width);
+		components = new byte[width * height * 4];
+
+		for(int i = 0; i < width * height; i++)
+		{
+			int pixel = imgPixels[i];
+
+			components[i * 4]     = (byte)((pixel >> 24) & 0xFF); // A
+			components[i * 4 + 1] = (byte)((pixel      ) & 0xFF); // B
+			components[i * 4 + 2] = (byte)((pixel >> 8 ) & 0xFF); // G
+			components[i * 4 + 3] = (byte)((pixel >> 16) & 0xFF); // R
+		}
+
+		m_width = width;
+		m_height = height;
+		m_components = components;
 	}
 
 	/**
