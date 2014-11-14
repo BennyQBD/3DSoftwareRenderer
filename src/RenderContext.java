@@ -2,9 +2,20 @@ import java.util.List;
 
 public class RenderContext extends Bitmap
 {
+	private float[] m_zBuffer;
+
 	public RenderContext(int width, int height)
 	{
 		super(width, height);
+		m_zBuffer = new float[width * height];
+	}
+
+	public void ClearDepthBuffer()
+	{
+		for(int i = 0; i < m_zBuffer.length; i++)
+		{
+			m_zBuffer[i] = Float.MAX_VALUE;
+		}
 	}
 
 	public void DrawMesh(Mesh mesh, Matrix4f transform, Bitmap texture)
@@ -101,21 +112,30 @@ public class RenderContext extends Bitmap
 		float texCoordXXStep = (right.GetTexCoordX() - left.GetTexCoordX())/xDist;
 		float texCoordYXStep = (right.GetTexCoordY() - left.GetTexCoordY())/xDist;
 		float oneOverZXStep = (right.GetOneOverZ() - left.GetOneOverZ())/xDist;
+		float depthXStep = (right.GetDepth() - left.GetDepth())/xDist;
 
 		float texCoordX = left.GetTexCoordX() + texCoordXXStep * xPrestep;
 		float texCoordY = left.GetTexCoordY() + texCoordYXStep * xPrestep;
 		float oneOverZ = left.GetOneOverZ() + oneOverZXStep * xPrestep;
+		float depth = left.GetDepth() + depthXStep * xPrestep;
 
 		for(int i = xMin; i < xMax; i++)
 		{
-			float z = 1.0f/oneOverZ;
-			int srcX = (int)((texCoordX * z) * (float)(texture.GetWidth() - 1) + 0.5f);
-			int srcY = (int)((texCoordY * z) * (float)(texture.GetHeight() - 1) + 0.5f);
+			int index = i + j * GetWidth();
+			if(depth < m_zBuffer[index])
+			{
+				m_zBuffer[index] = depth;
+				float z = 1.0f/oneOverZ;
+				int srcX = (int)((texCoordX * z) * (float)(texture.GetWidth() - 1) + 0.5f);
+				int srcY = (int)((texCoordY * z) * (float)(texture.GetHeight() - 1) + 0.5f);
 
-			CopyPixel(i, j, srcX, srcY, texture);
+				CopyPixel(i, j, srcX, srcY, texture);
+			}
+
 			oneOverZ += oneOverZXStep;
 			texCoordX += texCoordXXStep;
 			texCoordY += texCoordYXStep;
+			depth += depthXStep;
 		}
 	}
 }
