@@ -53,7 +53,10 @@ public class Display extends Canvas
 	/** A graphics object that can draw into the Canvas's buffers */
 	private final Graphics       m_graphics;
 
+	private final Input          m_input;
+
 	public RenderContext GetFrameBuffer() { return m_frameBuffer; }
+	public Input GetInput() { return m_input; }
 
 	/**
 	 * Creates and initializes a new display.
@@ -96,6 +99,15 @@ public class Display extends Canvas
 		createBufferStrategy(1);
 		m_bufferStrategy = getBufferStrategy();
 		m_graphics = m_bufferStrategy.getDrawGraphics();
+		
+		m_input = new Input();
+		addKeyListener(m_input);
+		addFocusListener(m_input);
+		addMouseListener(m_input);
+		addMouseMotionListener(m_input);
+
+		setFocusable(true);
+		requestFocus();
 	}
 
 	/**

@@ -13,6 +13,11 @@ public class Vector4f
 		this.w = w;
 	}
 
+	public Vector4f(float x, float y, float z)
+	{
+		this(x, y, z, 1.0f);
+	}
+
 	public float Length()
 	{
 		return (float)Math.sqrt(x * x + y * y + z * z + w * w);
@@ -54,14 +59,14 @@ public class Vector4f
 						axis.Mul(this.Dot(axis.Mul(1 - cosAngle))))); //Rotation on local Y
 	}
 
-//	public Vector3f rotate(Quaternion rotation)
-//	{
-//		Quaternion conjugate = rotation.conjugate();
-//
-//		Quaternion w = rotation.mul(this).mul(conjugate);
-//
-//		return new Vector3f(w.getX(), w.getY(), w.getZ());
-//	}
+	public Vector4f Rotate(Quaternion rotation)
+	{
+		Quaternion conjugate = rotation.Conjugate();
+
+		Quaternion w = rotation.Mul(this).Mul(conjugate);
+
+		return new Vector4f(w.GetX(), w.GetY(), w.GetZ(), 1.0f);
+	}
 
 	public Vector4f Lerp(Vector4f dest, float lerpFactor)
 	{

@@ -27,6 +27,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.io.IOException;
+
 /**
  * Represents a 3D Star field that can be rendered into an image.
  */
@@ -51,7 +53,7 @@ public class Stars3D
 	 * @param spread   How much the stars spread out, on average.
 	 * @param speed    How quickly the stars move towards the camera
 	 */
-	public Stars3D(int numStars, float spread, float speed)
+	public Stars3D(int numStars, float spread, float speed) throws IOException
 	{
 		m_spread = spread;
 		m_speed = speed;
@@ -64,7 +66,11 @@ public class Stars3D
 		{
 			InitStar(i);
 		}
+
+		m_bitmap = new Bitmap("./res/bricks.jpg");
 	}
+
+	private final Bitmap m_bitmap;
 
 	/**
 	 * Initializes a star to a new pseudo-random location in 3D space.
@@ -157,11 +163,14 @@ public class Stars3D
 			else if(triangleBuilderCounter == 3)
 			{
 				triangleBuilderCounter = 0;
-//				Vertex v1 = new Vertex(x1, y1);
-//				Vertex v2 = new Vertex(x2, y2);
-//				Vertex v3 = new Vertex(x, y);
+//				Vertex v1 = new Vertex(new Vector4f(x1/400.0f - 1.0f, y1/300.0f - 1.0f, 0.0f, 1.0f), 
+//						new Vector4f(1.0f, 0.0f, 0.0f, 0.0f));
+//				Vertex v2 = new Vertex(new Vector4f(x2/400.0f - 1.0f, y2/300.0f - 1.0f, 0.0f, 1.0f), 
+//						new Vector4f(1.0f, 1.0f, 0.0f, 0.0f));
+//				Vertex v3 = new Vertex(new Vector4f(x/400.0f - 1.0f, y/300.0f - 1.0f, 0.0f, 1.0f), 
+//						new Vector4f(0.0f, 1.0f, 0.0f, 0.0f));
 //
-//				target.FillTriangle(v1, v2, v3);
+//				target.DrawTriangle(v1, v2, v3, m_bitmap);
 			}
 		}
 	}

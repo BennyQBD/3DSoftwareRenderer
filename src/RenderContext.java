@@ -22,18 +22,9 @@ public class RenderContext extends Bitmap
 
 	public void DrawTriangle(Vertex v1, Vertex v2, Vertex v3, Bitmap texture)
 	{
-		boolean v1Inside = v1.IsInsideViewFrustum();
-		boolean v2Inside = v2.IsInsideViewFrustum();
-		boolean v3Inside = v3.IsInsideViewFrustum();
-
-		if(v1Inside && v2Inside && v3Inside)
+		if(v1.IsInsideViewFrustum() && v2.IsInsideViewFrustum() && v3.IsInsideViewFrustum())
 		{
 			FillTriangle(v1, v2, v3, texture);
-			return;
-		}
-
-		if(!v1Inside && !v2Inside && !v3Inside)
-		{
 			return;
 		}
 
@@ -155,11 +146,11 @@ public class RenderContext extends Bitmap
 		Edge topToMiddle    = new Edge(gradients, minYVert, midYVert, 0);
 		Edge middleToBottom = new Edge(gradients, midYVert, maxYVert, 1);
 
-		ScanEdges(topToBottom, topToMiddle, handedness, texture);
-		ScanEdges(topToBottom, middleToBottom, handedness, texture);
+		ScanEdges(gradients, topToBottom, topToMiddle, handedness, texture);
+		ScanEdges(gradients, topToBottom, middleToBottom, handedness, texture);
 	}
 
-	private void ScanEdges(Edge a, Edge b, boolean handedness, Bitmap texture)
+	private void ScanEdges(Gradients gradients, Edge a, Edge b, boolean handedness, Bitmap texture)
 	{
 		Edge left = a;
 		Edge right = b;
@@ -174,23 +165,30 @@ public class RenderContext extends Bitmap
 		int yEnd   = b.GetYEnd();
 		for(int j = yStart; j < yEnd; j++)
 		{
-			DrawScanLine(left, right, j, texture);
+			DrawScanLine(gradients, left, right, j, texture);
 			left.Step();
 			right.Step();
 		}
 	}
 
-	private void DrawScanLine(Edge left, Edge right, int j, Bitmap texture)
+	private void DrawScanLine(Gradients gradients, Edge left, Edge right, int j, Bitmap texture)
 	{
 		int xMin = (int)Math.ceil(left.GetX());
 		int xMax = (int)Math.ceil(right.GetX());
 		float xPrestep = xMin - left.GetX();
 
-		float xDist = right.GetX() - left.GetX();
-		float texCoordXXStep = (right.GetTexCoordX() - left.GetTexCoordX())/xDist;
-		float texCoordYXStep = (right.GetTexCoordY() - left.GetTexCoordY())/xDist;
-		float oneOverZXStep = (right.GetOneOverZ() - left.GetOneOverZ())/xDist;
-		float depthXStep = (right.GetDepth() - left.GetDepth())/xDist;
+//		float xDist = right.GetX() - left.GetX();
+//		float texCoordXXStep = (right.GetTexCoordX() - left.GetTexCoordX())/xDist;
+//		float texCoordYXStep = (right.GetTexCoordY() - left.GetTexCoordY())/xDist;
+//		float oneOverZXStep = (right.GetOneOverZ() - left.GetOneOverZ())/xDist;
+//		float depthXStep = (right.GetDepth() - left.GetDepth())/xDist;
+
+		// Apparently, now that stepping is actually on pixel centers, gradients are
+		// precise enough again.
+		float texCoordXXStep = gradients.GetTexCoordXXStep();
+		float texCoordYXStep = gradients.GetTexCoordYXStep();
+		float oneOverZXStep = gradients.GetOneOverZXStep();
+		float depthXStep = gradients.GetDepthXStep();
 
 		float texCoordX = left.GetTexCoordX() + texCoordXXStep * xPrestep;
 		float texCoordY = left.GetTexCoordY() + texCoordYXStep * xPrestep;
