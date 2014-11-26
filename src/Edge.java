@@ -12,6 +12,8 @@ public class Edge
 	private float m_oneOverZStep;
 	private float m_depth;
 	private float m_depthStep;
+	private float m_lightAmt;
+	private float m_lightAmtStep;
 
 	public float GetX() { return m_x; }
 	public int GetYStart() { return m_yStart; }
@@ -20,6 +22,7 @@ public class Edge
 	public float GetTexCoordY() { return m_texCoordY; }
 	public float GetOneOverZ() { return m_oneOverZ; }
 	public float GetDepth() { return m_depth; }
+	public float GetLightAmt() { return m_lightAmt; }
 
 	public Edge(Gradients gradients, Vertex minYVert, Vertex maxYVert, int minYVertIndex)
 	{
@@ -53,6 +56,11 @@ public class Edge
 			gradients.GetDepthXStep() * xPrestep +
 			gradients.GetDepthYStep() * yPrestep;
 		m_depthStep = gradients.GetDepthYStep() + gradients.GetDepthXStep() * m_xStep;
+
+		m_lightAmt = gradients.GetLightAmt(minYVertIndex) +
+			gradients.GetLightAmtXStep() * xPrestep +
+			gradients.GetLightAmtYStep() * yPrestep;
+		m_lightAmtStep = gradients.GetLightAmtYStep() + gradients.GetLightAmtXStep() * m_xStep;
 	}
 
 	public void Step()
@@ -62,5 +70,6 @@ public class Edge
 		m_texCoordY += m_texCoordYStep;
 		m_oneOverZ += m_oneOverZStep;
 		m_depth += m_depthStep;
+		m_lightAmt += m_lightAmtStep;
 	}
 }

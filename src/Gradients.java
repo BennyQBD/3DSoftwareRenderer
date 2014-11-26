@@ -4,6 +4,7 @@ public class Gradients
 	private float[] m_texCoordY;
 	private float[] m_oneOverZ;
 	private float[] m_depth;
+	private float[] m_lightAmt;
 
 	private float m_texCoordXXStep;
 	private float m_texCoordXYStep;
@@ -13,11 +14,14 @@ public class Gradients
 	private float m_oneOverZYStep;
 	private float m_depthXStep;
 	private float m_depthYStep;
+	private float m_lightAmtXStep;
+	private float m_lightAmtYStep;
 
 	public float GetTexCoordX(int loc) { return m_texCoordX[loc]; }
 	public float GetTexCoordY(int loc) { return m_texCoordY[loc]; }
 	public float GetOneOverZ(int loc) { return m_oneOverZ[loc]; }
 	public float GetDepth(int loc) { return m_depth[loc]; }
+	public float GetLightAmt(int loc) { return m_lightAmt[loc]; }
 
 	public float GetTexCoordXXStep() { return m_texCoordXXStep; }
 	public float GetTexCoordXYStep() { return m_texCoordXYStep; }
@@ -27,6 +31,8 @@ public class Gradients
 	public float GetOneOverZYStep() { return m_oneOverZYStep; }
 	public float GetDepthXStep() { return m_depthXStep; }
 	public float GetDepthYStep() { return m_depthYStep; }
+	public float GetLightAmtXStep() { return m_lightAmtXStep; }
+	public float GetLightAmtYStep() { return m_lightAmtYStep; }
 
 	private float CalcXStep(float[] values, Vertex minYVert, Vertex midYVert,
 			Vertex maxYVert, float oneOverdX)
@@ -48,6 +54,19 @@ public class Gradients
 			(midYVert.GetX() - maxYVert.GetX()))) * oneOverdY;
 	}
 
+	private float Saturate(float val)
+	{
+		if(val > 1.0f)
+		{
+			return 1.0f;
+		}
+		if(val < 0.0f)
+		{
+			return 0.0f;
+		}
+		return val;
+	}
+
 	public Gradients(Vertex minYVert, Vertex midYVert, Vertex maxYVert)
 	{
 		float oneOverdX = 1.0f /
@@ -62,10 +81,16 @@ public class Gradients
 		m_texCoordX = new float[3];
 		m_texCoordY = new float[3];
 		m_depth = new float[3];
+		m_lightAmt = new float[3];
 
 		m_depth[0] = minYVert.GetPosition().GetZ();
 		m_depth[1] = midYVert.GetPosition().GetZ();
 		m_depth[2] = maxYVert.GetPosition().GetZ();
+
+		Vector4f lightDir = new Vector4f(0,0,1);
+		m_lightAmt[0] = Saturate(minYVert.GetNormal().Dot(lightDir)) * 0.9f + 0.1f;
+		m_lightAmt[1] = Saturate(midYVert.GetNormal().Dot(lightDir)) * 0.9f + 0.1f;
+		m_lightAmt[2] = Saturate(maxYVert.GetNormal().Dot(lightDir)) * 0.9f + 0.1f;
 
 		// Note that the W component is the perspective Z value;
 		// The Z component is the occlusion Z value
@@ -89,5 +114,7 @@ public class Gradients
 		m_oneOverZYStep = CalcYStep(m_oneOverZ, minYVert, midYVert, maxYVert, oneOverdY);
 		m_depthXStep = CalcXStep(m_depth, minYVert, midYVert, maxYVert, oneOverdX);
 		m_depthYStep = CalcYStep(m_depth, minYVert, midYVert, maxYVert, oneOverdY);
+		m_lightAmtXStep = CalcXStep(m_lightAmt, minYVert, midYVert, maxYVert, oneOverdX);
+		m_lightAmtYStep = CalcYStep(m_lightAmt, minYVert, midYVert, maxYVert, oneOverdY);
 	}
 }

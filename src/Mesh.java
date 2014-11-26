@@ -16,20 +16,22 @@ public class Mesh
 		{
 			m_vertices.add(new Vertex(
 						model.GetPositions().get(i),
-						model.GetTexCoords().get(i)));
+						model.GetTexCoords().get(i),
+						model.GetNormals().get(i)));
 		}
 
 		m_indices = model.GetIndices();
 	}
 
-	public void Draw(RenderContext context, Matrix4f transform, Bitmap texture)
+	public void Draw(RenderContext context, Matrix4f viewProjection, Matrix4f transform, Bitmap texture)
 	{
+		Matrix4f mvp = viewProjection.Mul(transform);
 		for(int i = 0; i < m_indices.size(); i += 3)
 		{
 			context.DrawTriangle(
-					m_vertices.get(m_indices.get(i)).Transform(transform),
-					m_vertices.get(m_indices.get(i + 1)).Transform(transform),
-					m_vertices.get(m_indices.get(i + 2)).Transform(transform),
+					m_vertices.get(m_indices.get(i)).Transform(mvp, transform),
+					m_vertices.get(m_indices.get(i + 1)).Transform(mvp, transform),
+					m_vertices.get(m_indices.get(i + 2)).Transform(mvp, transform),
 					texture);
 		}
 	}

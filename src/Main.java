@@ -45,7 +45,7 @@ public class Main
 
 		Bitmap texture = new Bitmap("./res/bricks.jpg");
 		Bitmap texture2 = new Bitmap("./res/bricks2.jpg");
-		Mesh monkeyMesh = new Mesh("./res/monkey0.obj");
+		Mesh monkeyMesh = new Mesh("./res/smoothMonkey0.obj");
 		Transform monkeyTransform = new Transform(new Vector4f(0,0.0f,3.0f));
 
 		Mesh terrainMesh = new Mesh("./res/terrain2.obj");
@@ -65,10 +65,12 @@ public class Main
 			camera.Update(display.GetInput(), delta);
 			Matrix4f vp = camera.GetViewProjection();
 
+			monkeyTransform = monkeyTransform.Rotate(new Quaternion(new Vector4f(0,1,0), delta));
+
 			target.Clear((byte)0x00);
 			target.ClearDepthBuffer();
-			monkeyMesh.Draw(target, vp.Mul(monkeyTransform.GetTransformation()), texture2);
-			terrainMesh.Draw(target, vp.Mul(terrainTransform.GetTransformation()), texture);
+			monkeyMesh.Draw(target, vp, monkeyTransform.GetTransformation(), texture2);
+			terrainMesh.Draw(target, vp, terrainTransform.GetTransformation(), texture);
 
 			display.SwapBuffers();
 		}

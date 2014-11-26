@@ -103,9 +103,10 @@ public class RenderContext extends Bitmap
 	{
 		Matrix4f screenSpaceTransform = 
 				new Matrix4f().InitScreenSpaceTransform(GetWidth()/2, GetHeight()/2);
-		Vertex minYVert = v1.Transform(screenSpaceTransform).PerspectiveDivide();
-		Vertex midYVert = v2.Transform(screenSpaceTransform).PerspectiveDivide();
-		Vertex maxYVert = v3.Transform(screenSpaceTransform).PerspectiveDivide();
+		Matrix4f identity = new Matrix4f().InitIdentity();
+		Vertex minYVert = v1.Transform(screenSpaceTransform, identity).PerspectiveDivide();
+		Vertex midYVert = v2.Transform(screenSpaceTransform, identity).PerspectiveDivide();
+		Vertex maxYVert = v3.Transform(screenSpaceTransform, identity).PerspectiveDivide();
 
 		if(minYVert.TriangleAreaTimesTwo(maxYVert, midYVert) >= 0)
 		{
@@ -189,11 +190,13 @@ public class RenderContext extends Bitmap
 		float texCoordYXStep = gradients.GetTexCoordYXStep();
 		float oneOverZXStep = gradients.GetOneOverZXStep();
 		float depthXStep = gradients.GetDepthXStep();
+		float lightAmtXStep = gradients.GetLightAmtXStep();
 
 		float texCoordX = left.GetTexCoordX() + texCoordXXStep * xPrestep;
 		float texCoordY = left.GetTexCoordY() + texCoordYXStep * xPrestep;
 		float oneOverZ = left.GetOneOverZ() + oneOverZXStep * xPrestep;
 		float depth = left.GetDepth() + depthXStep * xPrestep;
+		float lightAmt = left.GetLightAmt() + lightAmtXStep * xPrestep;
 
 		for(int i = xMin; i < xMax; i++)
 		{
@@ -205,13 +208,14 @@ public class RenderContext extends Bitmap
 				int srcX = (int)((texCoordX * z) * (float)(texture.GetWidth() - 1) + 0.5f);
 				int srcY = (int)((texCoordY * z) * (float)(texture.GetHeight() - 1) + 0.5f);
 
-				CopyPixel(i, j, srcX, srcY, texture);
+				CopyPixel(i, j, srcX, srcY, texture, lightAmt);
 			}
 
 			oneOverZ += oneOverZXStep;
 			texCoordX += texCoordXXStep;
 			texCoordY += texCoordYXStep;
 			depth += depthXStep;
+			lightAmt += lightAmtXStep;
 		}
 	}
 }
